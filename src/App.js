@@ -33,7 +33,7 @@ const App = () => {
             />
               <ServiceCard
                 title="Enterprise Solutions"
-                description="Infuse your business processes for better efficiency with great returns."
+                description="Infuse your business processes with cutting edge enterprise solutions for better efficiency with great returns."
               />
             <ServiceCard
               title="UI/UX Design"
