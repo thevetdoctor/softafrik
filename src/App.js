@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import './App.css';
 
 const App = () => {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmitted(true);
+  };
+
+  const handleConfirm = () => {
+    setIsSubmitted(false);
+    alert("Thank you for confirming!");
+  };
   return (
     <div className="font-sans">
       {/* Hero Section */}
@@ -26,7 +37,7 @@ const App = () => {
       <section className="py-20 bg-gray-100">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Our Services</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8">
             <ServiceCard
               title="Web Development"
               description="Custom web & mobile application built with modern technologies."
@@ -60,12 +71,15 @@ const App = () => {
       <section className="py-20 bg-purple-800 text-white">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Contact Us</h2>
-          <form className="max-w-md mx-auto">
+          <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+          {!isSubmitted ? (
+          <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <input
                 type="text"
                 placeholder="Your Name"
                 className="w-full px-4 py-2 rounded-md text-black"
+                required
               />
             </div>
             <div className="mb-4">
@@ -73,18 +87,37 @@ const App = () => {
                 type="email"
                 placeholder="Your Email"
                 className="w-full px-4 py-2 rounded-md text-black"
+                required
               />
             </div>
             <div className="mb-4">
               <textarea
                 placeholder="Your Message"
                 className="w-full px-4 py-2 rounded-md text-black"
+                required
               ></textarea>
             </div>
             <button className="bg-white text-purple-800 px-6 py-3 rounded-md font-semibold">
               Send Message
             </button>
           </form>
+            ) : (
+              <div className="bg-green-100 p-6 rounded-lg shadow-md text-center">
+                <h2 className="text-lg font-semibold text-green-800 mb-4">
+                  Thank you for your message!
+                </h2>
+                <p className="text-green-700 mb-6">
+                  We’ve received your message and will get back to you shortly.
+                </p>
+                <button
+                  onClick={handleConfirm}
+                  className="bg-green-800 text-white px-6 py-3 rounded-md font-semibold"
+                >
+                  Confirm
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </section>
     </div>
