@@ -2,6 +2,8 @@ const express = require("express");
 const path = require("path");
 const port = process.env.PORT || 3000;
 const app = express();
+const helmet = require("helmet");
+app.use(helmet());
 
 // the __dirname is the current directory from where the script is running
 app.use(express.static(path.join(__dirname, "../build")));
