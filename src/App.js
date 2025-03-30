@@ -19,7 +19,7 @@ const App = () => {
   const sendData = async (body) => {
     try {
       console.log('Form Data:', body);
-      body.message = `We received your message: ${body.message}`;
+      body.template = `We received your message: ${body.message}`;
       body.from = 'Softafrik NG';
       const response = await api.post('/feedback', body, { headers: { 'Authorization': 'Bearer FqjKT1ULwU4TaFSm5BPb' } });
       console.log('Response:', response.data);
