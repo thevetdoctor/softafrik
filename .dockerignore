@@ -3,4 +3,4 @@ npm-debug.log
 *.log
 coverage1
 dist
-// .env
+.env
