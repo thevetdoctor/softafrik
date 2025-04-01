@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import api from './utils/api';
+// import api from './utils/api';
 import { gatewayUrl, mailServiceUrl } from './utils/constants';
 
 const App = () => {
@@ -23,8 +23,17 @@ const App = () => {
       body.template = `We received your message: ${body.message}`;
       body.from = 'Softafrik NG';
       // const response = await api.post('/feedback', body, { headers: { 'Authorization': 'Bearer FqjKT1ULwU4TaFSm5BPb' } });
-      const response = await fetch('/feedback', body, { headers: { 'Authorization': 'Bearer FqjKT1ULwU4TaFSm5BPb' } });
-      console.log('Response:', response.data);
+      // const response = await fetch(`${mailServiceUrl}/feedback`, body, { headers: { 'Authorization': 'Bearer FqjKT1ULwU4TaFSm5BPb' } });
+      const response = await fetch(`${mailServiceUrl}/feedback`, {
+        method: "POST", // Use the correct HTTP method
+        headers: {
+          "Authorization": "Bearer FqjKT1ULwU4TaFSm5BPb",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body), // Convert body to JSON string
+      });
+
+      console.log('Response:', (await response.json()));
       setFormData({
         name: '',
         email: '',
