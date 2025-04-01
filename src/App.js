@@ -22,7 +22,8 @@ const App = () => {
       console.log('Form Data:', body);
       body.template = `We received your message: ${body.message}`;
       body.from = 'Softafrik NG';
-      const response = await api.post('/feedback', body, { headers: { 'Authorization': 'Bearer FqjKT1ULwU4TaFSm5BPb' } });
+      // const response = await api.post('/feedback', body, { headers: { 'Authorization': 'Bearer FqjKT1ULwU4TaFSm5BPb' } });
+      const response = await fetch('/feedback', body, { headers: { 'Authorization': 'Bearer FqjKT1ULwU4TaFSm5BPb' } });
       console.log('Response:', response.data);
       setFormData({
         name: '',
