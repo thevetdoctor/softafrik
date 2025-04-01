@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import api from './utils/api';
+import { gatewayUrl, mailServiceUrl } from './utils/constants';
 
 const App = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -12,8 +13,8 @@ const App = () => {
   });
 
   useEffect(() => {
-    console.log('gateway url', process.env.REACT_APP_GATEWAY_URL ?? 'not found')
-    console.log('mail service url', process.env.REACT_APP_MAIL_SERVICE_URL ?? 'not found')
+    console.log('gateway url',gatewayUrl ?? 'not found')
+    console.log('mail service url', mailServiceUrl ?? 'not found')
   }, []);
 
   const sendData = async (body) => {
