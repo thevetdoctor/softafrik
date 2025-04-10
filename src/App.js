@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import api from './utils/api';
-import { gatewayUrl, mailServiceUrl } from './utils/constants';
+import { gatewayUrl, mailServiceUrl, reSubscribeAlways } from './utils/constants';
 
 const App = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -15,6 +15,7 @@ const App = () => {
   useEffect(() => {
     console.log('gateway url',gatewayUrl ?? 'not found')
     console.log('mail service url', mailServiceUrl ?? 'not found')
+    console.log('resubscribe always', reSubscribeAlways ?? 'not found')
   }, []);
 
   const sendData = async (body) => {
