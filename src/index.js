@@ -19,20 +19,38 @@ function urlBase64ToUint8Array(base64String) {
 }
 export const uIntArrayValue = urlBase64ToUint8Array('BDZIUMRhZEcT7daUm4SYPOn_5Lysqw-_XvCCBnYBEOlgOt5EcRHwyiOgFPDsJalVZv-l1_9pI0EcVLf6KbDQfAQ');
 
+function getDeviceId() {
+  let id = localStorage.getItem('deviceId');
+  if (!id) {
+    id = crypto.randomUUID(); // or use a UUID library
+    localStorage.setItem('deviceId', id);
+  }
+  return id;
+}
+
 const subscribeUser = async () => {
     const sw = await navigator.serviceWorker.ready;
     const subscriptionExist = await sw.pushManager.getSubscription();
 
+    const deviceId = getDeviceId();
     console.log('subscriptionExist', subscriptionExist)
+    console.log('deviceId', deviceId)
     if (!subscriptionExist || (reSubscribeAlways && subscriptionExist)) {
       const subscription = await sw.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: uIntArrayValue,
       });
+      // Extract the subscription JSON and attach your deviceId
+      const subscriptionData = subscription.toJSON();
+
+      const payload = {
+        ...subscriptionData,
+        deviceId // your UUID from localStorage or similar
+      };
 
       await fetch(`${mailServiceUrl}/notification/subscribe`, {
         method: 'POST',
-        body: JSON.stringify(subscription),
+        body: JSON.stringify({ subscription: payload }),
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       });
     };
