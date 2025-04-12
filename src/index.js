@@ -29,6 +29,8 @@ function getDeviceId() {
 }
 
 const subscribeUser = async () => {
+  try {
+
     const sw = await navigator.serviceWorker.ready;
     const subscriptionExist = await sw.pushManager.getSubscription();
 
@@ -54,6 +56,17 @@ const subscribeUser = async () => {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       });
     };
+  } catch (e) {
+    console.log('Subscription error:', e.message);
+
+  if (Notification.permission === 'denied') {
+    // Optionally show a UI hint to help them enable it
+    alert('You’ve blocked notifications. You can enable them in your browser settings.');
+  } else {
+    alert('Something went wrong while enabling notifications.');
+  }
+
+  }
   }
 subscribeUser();
 

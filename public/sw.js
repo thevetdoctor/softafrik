@@ -1,6 +1,25 @@
 const mailServiceUrl = 'https://mail.softafrik.com';
 
 self.addEventListener('push', function (e) {
+
+  if (Notification.permission === 'granted') {
+    // Safe to subscribe
+    console.warn('Notifications denied by user');
+
+  } else if (Notification.permission === 'default') {
+    // Ask user
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        // Now safe to subscribe
+      } else {
+        console.warn('Notifications denied by user');
+      }
+    });
+  } else {
+    // 'denied'
+    console.warn('Notifications are blocked. Please enable them in your browser settings.');
+  }
+  
   let data = {};
   try {
     data = e.data.json();
