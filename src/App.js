@@ -13,9 +13,9 @@ const App = () => {
   });
 
   useEffect(() => {
-    console.log('gateway url',gatewayUrl ?? 'not found')
-    console.log('mail service url', mailServiceUrl ?? 'not found')
-    console.log('resubscribe always', reSubscribeAlways ?? 'not found')
+    console.log('gateway url',gatewayUrl || 'not found')
+    console.log('mail service url', mailServiceUrl || 'not found')
+    console.log('resubscribe always', reSubscribeAlways || 'not found')
   }, []);
 
   const sendData = async (body) => {
