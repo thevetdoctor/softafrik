@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
@@ -6,18 +7,20 @@ import reportWebVitals from './reportWebVitals';
 import { mailServiceUrl, reSubscribeAlways, token } from './utils/constants';
 
 if ('serviceWorker' in navigator && 'PushManager' in window) {
-  navigator.serviceWorker.register('/sw.js').then(swReg => {
+  navigator.serviceWorker.register('/sw.js').then((swReg) => {
     console.log('Service Worker is registered', swReg);
   });
 }
 
 function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
   const rawData = window.atob(base64);
-  return new Uint8Array([...rawData].map(char => char.charCodeAt(0)));
+  return new Uint8Array([...rawData].map((char) => char.charCodeAt(0)));
 }
-export const uIntArrayValue = urlBase64ToUint8Array('BDZIUMRhZEcT7daUm4SYPOn_5Lysqw-_XvCCBnYBEOlgOt5EcRHwyiOgFPDsJalVZv-l1_9pI0EcVLf6KbDQfAQ');
+export const uIntArrayValue = urlBase64ToUint8Array(
+  'BDZIUMRhZEcT7daUm4SYPOn_5Lysqw-_XvCCBnYBEOlgOt5EcRHwyiOgFPDsJalVZv-l1_9pI0EcVLf6KbDQfAQ'
+);
 
 function getDeviceId() {
   let id = localStorage.getItem('deviceId');
@@ -34,10 +37,50 @@ const subscribeUser = async () => {
     const subscriptionExist = await sw.pushManager.getSubscription();
 
     const deviceId = getDeviceId();
-    console.log('subscriptionExist', subscriptionExist)
-    console.log('deviceId', deviceId)
+    console.log('subscriptionExist', subscriptionExist);
+    console.log('deviceId', deviceId);
     alert(`Permission ${Notification.permission}`);
+    if (Notification.permission === 'default') {
+      const requestPermission = confirm('Would you like to enable notifications?');
+      if (requestPermission) {
+        // user clicked OK
+        const subscription = await sw.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: uIntArrayValue,
+        });
+        // Extract the subscription JSON and attach your deviceId
+        const subscriptionData = subscription.toJSON();
 
+        const payload = {
+          ...subscriptionData,
+          deviceId, // your UUID from localStorage or similar
+        };
+        try {
+          const response = await fetch(`${mailServiceUrl}/notification/subscribe`, {
+            method: 'POST',
+            body: JSON.stringify({ subscription: payload }),
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            const errorBody = await response.json();
+            throw new Error(`${JSON.stringify(errorBody.error)}`);
+          } else {
+            alert(`Subscribed`);
+          }
+        } catch (e) {
+          alert(`Failed to subscribe for notifications.\nReason: ${e.message}`);
+          console.error('Subscription error:', e.message);
+        }
+      } else {
+        // user clicked Cancel
+        alert('Notifications not enabled.');
+      }
+    }
+    // --------------------------------------------------------------
     if (!subscriptionExist || reSubscribeAlways) {
       const subscription = await sw.pushManager.subscribe({
         userVisibleOnly: true,
@@ -48,17 +91,17 @@ const subscribeUser = async () => {
 
       const payload = {
         ...subscriptionData,
-        deviceId // your UUID from localStorage or similar
+        deviceId, // your UUID from localStorage or similar
       };
 
-      console.log(Notification.permission === 'granted', 'subscribing')
+      console.log(Notification.permission === 'granted', 'subscribing');
       try {
         const response = await fetch(`${mailServiceUrl}/notification/subscribe`, {
           method: 'POST',
           body: JSON.stringify({ subscription: payload }),
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -72,23 +115,30 @@ const subscribeUser = async () => {
         alert(`Failed to subscribe for notifications.\nReason: ${e.message}`);
         console.error('Subscription error:', e.message);
       }
-    };
+    }
+    // ---------------------------------------------------------------
   } catch (e) {
     console.log('Subscription error:', e.message);
     alert(`Permission ${Notification.permission}`);
 
-  if (Notification.permission === 'denied') {
-    // Optionally show a UI hint to help them enable it
-    alert('You’ve blocked notifications. You can enable them in your browser settings.');
-  } else {
-    alert('Something went wrong while enabling notifications.');
-    alert(`${e.message}`);
-
-    // alert(`${JSON.stringify(Notification.permission)}`);
+    if (Notification.permission === 'denied') {
+      // Optionally show a UI hint to help them enable it
+      alert('You’ve blocked notifications. You can enable them in your browser settings.');
+    } else {
+      alert('Something went wrong while enabling notifications.');
+      alert(`${e.message}`);
+    }
   }
-
-  }
-  }
+};
+// button.addEventListener('click', async () => {
+//   const permission = await Notification.requestPermission();
+//   if (permission === 'granted') {
+//     await subscribeUser(); // your function that registers/subscribes
+//   } else {
+//     alert('Notifications are blocked or denied.');
+//   }
+// });
+// alert(`${JSON.stringify(Notification.permission)}`);
 subscribeUser();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

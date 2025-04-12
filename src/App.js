@@ -13,9 +13,9 @@ const App = () => {
   });
 
   useEffect(() => {
-    console.log('gateway url',gatewayUrl || 'not found')
-    console.log('mail service url', mailServiceUrl || 'not found')
-    console.log('resubscribe always', reSubscribeAlways || 'not found')
+    console.log('gateway url', gatewayUrl || 'not found');
+    console.log('mail service url', mailServiceUrl || 'not found');
+    console.log('resubscribe always', reSubscribeAlways || 'not found');
   }, []);
 
   const sendData = async (body) => {
@@ -23,13 +23,15 @@ const App = () => {
       console.log('Form Data:', body);
       body.template = `<p>We received your message:</p> ${body.message}`;
       body.from = 'Softafrik NG';
-      const response = await api.post('/feedback', body, { headers: { 'Authorization': 'Bearer FqjKT1ULwU4TaFSm5BPb' } });
+      const response = await api.post('/feedback', body, {
+        headers: { Authorization: 'Bearer FqjKT1ULwU4TaFSm5BPb' },
+      });
       console.log('Response:', response.data);
       setFormData({
         name: '',
         email: '',
         message: '',
-      })
+      });
       return true;
     } catch (error) {
       console.error('Error:', error.message);
@@ -46,10 +48,10 @@ const App = () => {
   };
 
   const handleSubmit = async (e) => {
-    setIsDisabled(true)
+    setIsDisabled(true);
     e.preventDefault();
     const result = await sendData(formData);
-    setIsDisabled(false)
+    setIsDisabled(false);
     if (result) setIsSubmitted(true);
   };
 
@@ -149,10 +151,11 @@ const App = () => {
                     required
                   ></textarea>
                 </div>
-                <button 
-                disabled={isDisabled} 
-                className="bg-white text-purple-800 px-6 py-3 rounded-md font-semibold">
-                  { !isDisabled ? 'Send Message' : 'Processing' }
+                <button
+                  disabled={isDisabled}
+                  className="bg-white text-purple-800 px-6 py-3 rounded-md font-semibold"
+                >
+                  {!isDisabled ? 'Send Message' : 'Processing'}
                 </button>
               </form>
             ) : (

@@ -37,7 +37,7 @@ jobs:
             docker pull 85958/softafrik:latest
             docker-compose -f docker-compose-softafrik.yml up -d
             exit
-      
+
       - name: Send Email Notification
         uses: dawidd6/action-send-mail@v3
         with:
@@ -47,6 +47,6 @@ jobs:
           password: ${{ secrets.SMTP_PASSWORD }}
           from: ${{ secrets.EMAIL_FROM }}
           to: ${{ secrets.EMAIL_TO }}
-          subject: "GitHub Action Notification: ${{ github.repository }}"
+          subject: 'GitHub Action Notification: ${{ github.repository }}'
           body: "Workflow completed with status: ${{ github.event.workflow_run.conclusion }}\nSee details: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           secure: true
