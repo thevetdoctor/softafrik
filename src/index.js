@@ -30,14 +30,15 @@ function getDeviceId() {
 
 const subscribeUser = async () => {
   try {
-
     const sw = await navigator.serviceWorker.ready;
     const subscriptionExist = await sw.pushManager.getSubscription();
 
     const deviceId = getDeviceId();
     console.log('subscriptionExist', subscriptionExist)
     console.log('deviceId', deviceId)
-    if (!subscriptionExist || (reSubscribeAlways && subscriptionExist)) {
+    alert(`Permission ${Notification.permission}`);
+
+    if (!subscriptionExist || reSubscribeAlways) {
       const subscription = await sw.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: uIntArrayValue,
@@ -50,6 +51,7 @@ const subscribeUser = async () => {
         deviceId // your UUID from localStorage or similar
       };
 
+      console.log(Notification.permission === 'granted', 'subscribing')
       await fetch(`${mailServiceUrl}/notification/subscribe`, {
         method: 'POST',
         body: JSON.stringify({ subscription: payload }),
@@ -58,12 +60,14 @@ const subscribeUser = async () => {
     };
   } catch (e) {
     console.log('Subscription error:', e.message);
+    alert(`Permission ${Notification.permission}`);
 
   if (Notification.permission === 'denied') {
     // Optionally show a UI hint to help them enable it
     alert('You’ve blocked notifications. You can enable them in your browser settings.');
   } else {
     alert('Something went wrong while enabling notifications.');
+    // alert(`${JSON.stringify(Notification.permission)}`);
   }
 
   }

@@ -23,7 +23,6 @@ self.addEventListener('push', function (e) {
   let data = {};
   try {
     data = e.data.json();
-    console.log('data', data?.payload)
   } catch (err) {
     console.error('Error parsing push data', err);
   }
