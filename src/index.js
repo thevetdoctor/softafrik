@@ -52,11 +52,26 @@ const subscribeUser = async () => {
       };
 
       console.log(Notification.permission === 'granted', 'subscribing')
-      await fetch(`${mailServiceUrl}/notification/subscribe`, {
-        method: 'POST',
-        body: JSON.stringify({ subscription: payload }),
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      });
+      try {
+        const response = await fetch(`${mailServiceUrl}/notification/subscribe`, {
+          method: 'POST',
+          body: JSON.stringify({ subscription: payload }),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const errorBody = await response.json();
+          throw new Error(`${JSON.stringify(errorBody.error)}`);
+        } else {
+          alert(`Subscribed`);
+        }
+      } catch (e) {
+        alert(`Failed to subscribe for notifications.\nReason: ${e.message}`);
+        console.error('Subscription error:', e.message);
+      }
     };
   } catch (e) {
     console.log('Subscription error:', e.message);
@@ -67,6 +82,8 @@ const subscribeUser = async () => {
     alert('You’ve blocked notifications. You can enable them in your browser settings.');
   } else {
     alert('Something went wrong while enabling notifications.');
+    alert(`${e.message}`);
+
     // alert(`${JSON.stringify(Notification.permission)}`);
   }
 
