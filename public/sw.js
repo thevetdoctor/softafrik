@@ -1,23 +1,6 @@
 const mailServiceUrl = 'https://mail.softafrik.com';
 
 self.addEventListener('push', function (e) {
-  if (Notification.permission === 'granted') {
-    // Safe to subscribe
-    console.warn('Notifications denied by user');
-  } else if (Notification.permission === 'default') {
-    // Ask user
-    Notification.requestPermission().then((permission) => {
-      if (permission === 'granted') {
-        // Now safe to subscribe
-      } else {
-        console.warn('Notifications denied by user');
-      }
-    });
-  } else {
-    // 'denied'
-    console.warn('Notifications are blocked. Please enable them in your browser settings.');
-  }
-
   let data = {};
   try {
     data = e.data.json();
@@ -25,9 +8,10 @@ self.addEventListener('push', function (e) {
     console.error('Error parsing push data', err);
   }
 
-  const { title, message } = data?.payload?.message || {
+  const { title, message, redirectUrl } = data?.payload?.message || {
     title: 'Buzz Updates',
     message: 'Trending news from Buzz',
+    redirectUrl: mailServiceUrl
   };
   const options = {
     body: message,
@@ -37,12 +21,12 @@ self.addEventListener('push', function (e) {
     data: {
       dateOfArrival: Date.now(),
       primaryKey: Date.now(), // 👈 unique too
-      redirectUrl: `${mailServiceUrl}`,
+      redirectUrl: redirectUrl,
     },
     actions: [{ action: 'view', title: 'View' }],
   };
 
-  console.log('Parsed notification data:', { title, message });
+  console.log('Parsed notification data:', { title, message, redirectUrl });
   e.waitUntil(
     self.registration
       .showNotification(title, options)
@@ -54,6 +38,7 @@ self.addEventListener('push', function (e) {
 self.addEventListener('notificationclick', function (event) {
   event.notification.close();
 
+  console.log(event.notification.data)
   const redirectUrl = event.notification.data?.redirectUrl || `${mailServiceUrl}`;
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
