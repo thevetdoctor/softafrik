@@ -40,46 +40,6 @@ export const subscribeUser = async () => {
     console.log('subscriptionExist', subscriptionExist);
     console.log('deviceId', deviceId);
     alert(`Permission ${Notification.permission}`);
-    // if (Notification.permission === 'default') {
-    //   const requestPermission = confirm('Would you like to enable notifications?');
-    //   if (requestPermission) {
-    //     // user clicked OK
-    //     const subscription = await sw.pushManager.subscribe({
-    //       userVisibleOnly: true,
-    //       applicationServerKey: uIntArrayValue,
-    //     });
-    //     // Extract the subscription JSON and attach your deviceId
-    //     const subscriptionData = subscription.toJSON();
-
-    //     const payload = {
-    //       ...subscriptionData,
-    //       deviceId, // your UUID from localStorage or similar
-    //     };
-    //     try {
-    //       const response = await fetch(`${mailServiceUrl}/notification/subscribe`, {
-    //         method: 'POST',
-    //         body: JSON.stringify({ subscription: payload }),
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //           Authorization: `Bearer ${token}`,
-    //         },
-    //       });
-
-    //       if (!response.ok) {
-    //         const errorBody = await response.json();
-    //         throw new Error(`${JSON.stringify(errorBody.error)}`);
-    //       } else {
-    //         alert(`Subscribed`);
-    //       }
-    //     } catch (e) {
-    //       alert(`Failed to subscribe for notifications.\nReason: ${e.message}`);
-    //       console.error('Subscription error:', e.message);
-    //     }
-    //   } else {
-    //     // user clicked Cancel
-    //     alert('Notifications not enabled.');
-    //   }
-    // }
     // --------------------------------------------------------------
     if (!subscriptionExist || reSubscribeAlways) {
       const subscription = await sw.pushManager.subscribe({
@@ -91,7 +51,7 @@ export const subscribeUser = async () => {
 
       const payload = {
         ...subscriptionData,
-        deviceId, // your UUID from localStorage or similar
+        deviceId,
       };
 
       console.log(Notification.permission === 'granted', 'subscribing');
@@ -122,7 +82,6 @@ export const subscribeUser = async () => {
     alert(`Permission ${Notification.permission}`);
 
     if (Notification.permission === 'denied') {
-      // Optionally show a UI hint to help them enable it
       alert('You’ve blocked notifications. You can enable them in your browser settings.');
     } else {
       alert('Something went wrong while enabling notifications.');
@@ -172,23 +131,11 @@ export const checkPermission = async () => {
     alert('Notifications not enabled.');
   }
 };
-// button.addEventListener('click', async () => {
-//   const permission = await Notification.requestPermission();
-//   if (permission === 'granted') {
-//     await subscribeUser(); // your function that registers/subscribes
-//   } else {
-//     alert('Notifications are blocked or denied.');
-//   }
-// });
-// alert(`${JSON.stringify(Notification.permission)}`);
-subscribeUser();
+// subscribeUser();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <App /> // Remove <React.StrictMode>
-  // <React.StrictMode>
-  //   <App />
-  // </React.StrictMode>
+  <App />
 );
 
 // If you want to start measuring performance in your app, pass a function
