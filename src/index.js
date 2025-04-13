@@ -31,7 +31,7 @@ function getDeviceId() {
   return id;
 }
 
-const subscribeUser = async () => {
+export const subscribeUser = async () => {
   try {
     const sw = await navigator.serviceWorker.ready;
     const subscriptionExist = await sw.pushManager.getSubscription();
@@ -40,46 +40,46 @@ const subscribeUser = async () => {
     console.log('subscriptionExist', subscriptionExist);
     console.log('deviceId', deviceId);
     alert(`Permission ${Notification.permission}`);
-    if (Notification.permission === 'default') {
-      const requestPermission = confirm('Would you like to enable notifications?');
-      if (requestPermission) {
-        // user clicked OK
-        const subscription = await sw.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: uIntArrayValue,
-        });
-        // Extract the subscription JSON and attach your deviceId
-        const subscriptionData = subscription.toJSON();
+    // if (Notification.permission === 'default') {
+    //   const requestPermission = confirm('Would you like to enable notifications?');
+    //   if (requestPermission) {
+    //     // user clicked OK
+    //     const subscription = await sw.pushManager.subscribe({
+    //       userVisibleOnly: true,
+    //       applicationServerKey: uIntArrayValue,
+    //     });
+    //     // Extract the subscription JSON and attach your deviceId
+    //     const subscriptionData = subscription.toJSON();
 
-        const payload = {
-          ...subscriptionData,
-          deviceId, // your UUID from localStorage or similar
-        };
-        try {
-          const response = await fetch(`${mailServiceUrl}/notification/subscribe`, {
-            method: 'POST',
-            body: JSON.stringify({ subscription: payload }),
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          });
+    //     const payload = {
+    //       ...subscriptionData,
+    //       deviceId, // your UUID from localStorage or similar
+    //     };
+    //     try {
+    //       const response = await fetch(`${mailServiceUrl}/notification/subscribe`, {
+    //         method: 'POST',
+    //         body: JSON.stringify({ subscription: payload }),
+    //         headers: {
+    //           'Content-Type': 'application/json',
+    //           Authorization: `Bearer ${token}`,
+    //         },
+    //       });
 
-          if (!response.ok) {
-            const errorBody = await response.json();
-            throw new Error(`${JSON.stringify(errorBody.error)}`);
-          } else {
-            alert(`Subscribed`);
-          }
-        } catch (e) {
-          alert(`Failed to subscribe for notifications.\nReason: ${e.message}`);
-          console.error('Subscription error:', e.message);
-        }
-      } else {
-        // user clicked Cancel
-        alert('Notifications not enabled.');
-      }
-    }
+    //       if (!response.ok) {
+    //         const errorBody = await response.json();
+    //         throw new Error(`${JSON.stringify(errorBody.error)}`);
+    //       } else {
+    //         alert(`Subscribed`);
+    //       }
+    //     } catch (e) {
+    //       alert(`Failed to subscribe for notifications.\nReason: ${e.message}`);
+    //       console.error('Subscription error:', e.message);
+    //     }
+    //   } else {
+    //     // user clicked Cancel
+    //     alert('Notifications not enabled.');
+    //   }
+    // }
     // --------------------------------------------------------------
     if (!subscriptionExist || reSubscribeAlways) {
       const subscription = await sw.pushManager.subscribe({
@@ -128,6 +128,48 @@ const subscribeUser = async () => {
       alert('Something went wrong while enabling notifications.');
       alert(`${e.message}`);
     }
+  }
+};
+
+export const checkPermission = async () => {
+  const requestPermission = confirm('Would you like to enable notifications?');
+  if (requestPermission) {
+    // user clicked OK
+    const subscription = await sw.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: uIntArrayValue,
+    });
+    // Extract the subscription JSON and attach your deviceId
+    const subscriptionData = subscription.toJSON();
+
+    const payload = {
+      ...subscriptionData,
+      deviceId, // your UUID from localStorage or similar
+    };
+    try {
+      const response = await fetch(`${mailServiceUrl}/notification/subscribe`, {
+        method: 'POST',
+        body: JSON.stringify({ subscription: payload }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json();
+        throw new Error(`${JSON.stringify(errorBody.error)}`);
+      } else {
+        alert(`Subscribed`);
+        return true;
+      }
+    } catch (e) {
+      alert(`Failed to subscribe for notifications.\nReason: ${e.message}`);
+      console.error('Subscription error:', e.message);
+    }
+  } else {
+    // user clicked Cancel
+    alert('Notifications not enabled.');
   }
 };
 // button.addEventListener('click', async () => {

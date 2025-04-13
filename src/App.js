@@ -1,7 +1,9 @@
+/* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import api from './utils/api';
 import { gatewayUrl, mailServiceUrl, reSubscribeAlways } from './utils/constants';
+import { checkPermission, subscribeUser } from './index';
 
 const App = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -11,6 +13,27 @@ const App = () => {
     email: '',
     message: '',
   });
+  const [permission, setPermission] = useState(Notification.permission);
+  const [status, setStatus] = useState('');
+
+  const checkPermission = async () => {
+    const currentPermission = await Notification.requestPermission();
+    setPermission(currentPermission); // fix here
+
+    if (currentPermission === 'granted') {
+      setStatus('Notifications enabled!');
+      console.log('Subscribing...');
+      subscribeUser(); // call only when permission is granted
+    } else if (currentPermission === 'denied') {
+      setStatus('Notifications blocked.');
+    } else {
+      setStatus('Permission not granted.');
+    }
+  };
+
+  useEffect(() => {
+    console.log('Current permission:', permission);
+  }, [permission]);
 
   useEffect(() => {
     console.log('gateway url', gatewayUrl || 'not found');
@@ -76,6 +99,18 @@ const App = () => {
           >
             Get Started
           </button>
+
+          {permission === 'default' && (
+            <div className="p-4">
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                onClick={checkPermission}
+              >
+                Enable Notifications
+              </button>
+              <p className="mt-2 text-sm">{status}</p>
+            </div>
+          )}
         </div>
       </section>
 
